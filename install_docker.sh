@@ -1,23 +1,28 @@
 #!/bin/bash
 
 #update the centos server
-yum upgrade -y
-yum --enablerepo=extras install epel-release -y
+apt upgrade -y
+
 
 #install docker 
-yum install docker-io -y
-chkconfig docker on
-printf '\nDocker Installed Successfully'
+sudo apt-get install -y \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    software-properties-common
 
-#add a vagrant user to the docker group
-sudo groupadd docker
-sudo usermod -a -G docker vagrant
+curl -fsSL https://yum.dockerproject.org/gpg | sudo apt-key add -
 
-#install docker compose
+sudo add-apt-repository \
+    "deb https://apt.dockerproject.org/repo/ \
+    ubuntu-$(lsb_release -cs) \
+    main"
 
-sudo yum install python-pip -y
-sudo pip install docker-compose 
-printf '\nDocker-Compose Installed Successfully'
+sudo apt-get update
+sudo apt-get -y install docker-engine docker-compose
+
+# add current user to docker group so there is no need to use sudo when running docker
+sudo usermod -aG docker $(whoami)
 
 #reboot the system
 /sbin/reboot
